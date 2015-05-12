@@ -1,0 +1,16 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "quotes": [2, "single"],
+    "strict": [2, "global"],
+    "no-unused-vars": false,
+    "no-unused-expressions": false,
+    "yoda": true,
+    "curly": false,
+    "no-use-before-define": false
+  }
+}
