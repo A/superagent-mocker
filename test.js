@@ -15,7 +15,7 @@ describe('superagent mock', function() {
 
     it('should register callback for get', function(done) {
       mock.get('/topics/:id', function(req, res) {
-        console.log('cb called');
+        req.params.id.should.be.equal('1');
         return { id: req.params.id };
       });
       request.get('/topics/1').end(function(_, data) {
@@ -24,21 +24,23 @@ describe('superagent mock', function() {
       });
     });
 
-    // it('should register callback for post', function(done) {
-    //   mock.post('/topics/:id', function(req, res) {
-    //     res.json({ id: req.params.id, content: req.body.content });
-    //   });
-    //   request
-    //     .post('/topics/5')
-    //     .send({ body: 'hello world' })
-    //     .end(function(_, data) {
-    //       data.should.have.property('id', 5);
-    //       data.should.have.property('content', 'hello world');
-    //       done();
-    //     })
-    //   ;
-    // });
-    //
+    it('should register callback for post', function(done) {
+      mock.post('/topics/:id', function(req, res) {
+        return {
+          id: req.params.id,
+          content: req.body.content
+        };
+      });
+      request
+        .post('/topics/5', { content: 'Hello world' })
+        .end(function(_, data) {
+          data.should.have.property('id', '5');
+          data.should.have.property('content', 'Hello world');
+          done();
+        })
+      ;
+    });
+
     // it('should register callback for put', function(done) {
     //   mock.put('/topics/:id', function(req, res) {
     //     res.json({ id: req.params.id, content: req.body.content });

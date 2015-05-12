@@ -18,7 +18,7 @@ var Route = module.exports = function Route(state) {
 /**
  * Match route with given url
  */
-Route.prototype.match = function(method, url) {
+Route.prototype.match = function(method, url, body) {
   if (this.method !== method) return false;
   var params = {};
   var m = this.regexp.exec(url);
@@ -34,7 +34,8 @@ Route.prototype.match = function(method, url) {
   return function() {
     return route.fn({
       url: url,
-      params: params
+      params: params || {},
+      body: body || {}
     });
   };
 };
