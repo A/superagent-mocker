@@ -11,6 +11,7 @@
     "no-unused-expressions": false,
     "yoda": true,
     "curly": false,
-    "no-use-before-define": false
+    "no-use-before-define": false,
+    "no-multi-spaces": false
   }
 }
