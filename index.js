@@ -3,11 +3,11 @@
 /**
  * Expose public API
  */
-exports = mock;
-exports.get = get;
+exports      = mock;
+exports.get  = get;
 exports.post = post;
-exports.put = put;
-exports.del = del;
+exports.put  = put;
+exports.del  = del;
 
 
 function mock(superagent) {
@@ -61,11 +61,18 @@ function Request() {
 }
 
 /**
- * Responce
+ * Response
  */
-function Responce() {
+function Response() {
 
 }
+
+/**
+ * Response with given json
+ */
+Response.prototype.json = function(data) {
+
+};
 
 
 /**
