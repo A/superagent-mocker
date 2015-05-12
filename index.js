@@ -1,100 +1,74 @@
 'use strict';
 
 /**
- * Expose public API
+ * Dependencies
  */
-exports      = mock;
-exports.get  = get;
-exports.post = post;
-exports.put  = put;
-exports.del  = del;
-
-
-function mock(superagent) {
-  // patch superagent here
-}
+var pathToRegexp = require('path-to-regexp');
+var Request      = require('./request');
+var Response     = require('./response');
+var Route        = require('./route');
 
 
 /**
- * Dispatch the route with all the middlewares
+ * Expose public API
  */
-function dispatch() {
+module.exports = mock;
+mock.get       = get;
+// mock.post      = post;
+// mock.put       = put;
+// mock.del       = del;
+
+/**
+ * Mock
+ */
+function mock(superagent) {
+
+  var SuperRequest = superagent.Request;
+  var oldGet = superagent.get;
+  var oldEnd = SuperRequest.prototype.end;
+  var match;
+
+  superagent.get = function (url, data, fn) {
+    match = dispatch('GET', url);
+    var req;
+    if (match) {
+      req = superagent('GET', url, data, fn);
+    } else {
+      req = oldGet.call(this, url, data, fn);
+    }
+    return req;
+  };
+
+  SuperRequest.prototype.end = function(cb) {
+    cb(null, match && match());
+  };
+
+  return mock;
 
 }
 
+function dispatch(method, url) {
+  var match;
+  var i = callbacks.length;
+  callbacks.forEach(function(callback) {
+    var m = callbacks[i-1].match('GET', url);
+    if (m) match = m;
+  });
+  return match;
+}
 
 /**
  * Register url and callback for `get`
  */
 function get(url, cb) {
-
+  callbacks.push(new Route({
+    url: url,
+    callback: cb,
+    method: 'GET'
+  }));
+  return mock;
 }
 
-
-/**
- * Register url and callback for `post`
- */
-function post(url, cb) {
-
-}
-
-/**
- * Register url and callback for `put`
- */
-function put(url, cb) {
-
-}
-
-/**
- * Register url and callback for `del`
- */
-function del(url, cb) {
-
-}
-
-
-/**
- * Request
- */
-function Request() {
-
-}
-
-/**
- * Response
- */
-function Response() {
-
-}
-
-/**
- * Response with given json
- */
-Response.prototype.json = function(data) {
-
-};
-
-
-/**
- * Route with given url
- */
-function Route() {
-
-}
-
-/**
- * Match route with given url
- */
-Route.prototype.match = function match() {
-
-};
-
-/**
- * Register middleware for the route
- */
-Route.prototype.middleware = function() {
-
-};
 
 /**
  * List of registred callbacks
