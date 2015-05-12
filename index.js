@@ -4,10 +4,7 @@
  * Dependencies
  */
 var pathToRegexp = require('path-to-regexp');
-var Request      = require('./request');
-var Response     = require('./response');
 var Route        = require('./route');
-
 
 /**
  * Expose public API
@@ -15,6 +12,8 @@ var Route        = require('./route');
 module.exports = mock;
 mock.get       = defineRoute.bind(null, 'GET');
 mock.post      = defineRoute.bind(null, 'POST');
+mock.put       = defineRoute.bind(null, 'PUT');
+mock.del       = defineRoute.bind(null, 'DELETE');
 /**
  * List of registred callbacks
  */
@@ -38,6 +37,18 @@ function mock(superagent) {
     match = dispatch('POST', url, data);
     return match
       ? superagent('POST', url, data, fn)
+      : oldGet.call(this, url, data, fn);
+  };
+  superagent.put = function (url, data, fn) {
+    match = dispatch('PUT', url, data);
+    return match
+      ? superagent('PUT', url, data, fn)
+      : oldGet.call(this, url, data, fn);
+  };
+  superagent.del = function (url, data, fn) {
+    match = dispatch('DELETE', url, data);
+    return match
+      ? superagent('DELETE', url, data, fn)
       : oldGet.call(this, url, data, fn);
   };
   SuperRequest.prototype.end = function(cb) {

@@ -11,10 +11,10 @@ var should  = require('should');
 
 describe('superagent mock', function() {
 
-  describe('callbacks', function() {
+  describe('API', function() {
 
-    it('should register callback for get', function(done) {
-      mock.get('/topics/:id', function(req, res) {
+    it('should mock for get', function(done) {
+      mock.get('/topics/:id', function(req) {
         req.params.id.should.be.equal('1');
         return { id: req.params.id };
       });
@@ -24,8 +24,8 @@ describe('superagent mock', function() {
       });
     });
 
-    it('should register callback for post', function(done) {
-      mock.post('/topics/:id', function(req, res) {
+    it('should mock for post', function(done) {
+      mock.post('/topics/:id', function(req) {
         return {
           id: req.params.id,
           content: req.body.content
@@ -41,33 +41,33 @@ describe('superagent mock', function() {
       ;
     });
 
-    // it('should register callback for put', function(done) {
-    //   mock.put('/topics/:id', function(req, res) {
-    //     res.json({ id: req.params.id, content: req.body.content });
-    //   });
-    //   request
-    //     .put('/topics/7')
-    //     .send({ id: 7, body: 'hello world, bitch!' })
-    //     .end(function(_, data) {
-    //       data.should.have.property('id', 7);
-    //       data.should.have.property('content', 'hello world, bitch');
-    //       done();
-    //     })
-    //   ;
-    // });
-    //
-    // it('should register callback for delete', function(done) {
-    //   mock.put('/topics/:id', function(req, res) {
-    //     res.json({ id: req.params.id, content: req.body.content });
-    //   });
-    //   request
-    //     .put('/topics/7')
-    //     .send({ id: 7, body: 'hello world, bitch!' })
-    //     .end(function(_, data) {
-    //       done(); // just done
-    //     })
-    //   ;
-    // });
+    it('should mock for put', function(done) {
+      mock.put('/topics/:id', function(req) {
+        return { id: req.params.id, content: req.body.content };
+      });
+      request
+        .put('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .end(function(_, data) {
+          data.should.have.property('id', '7');
+          data.should.have.property('content', 'hello world, bitch!11');
+          done();
+        })
+      ;
+    });
+
+    it('should mock for delete', function(done) {
+      mock.del('/topics/:id', function(req) {
+        return { id: req.params.id, content: req.body.content };
+      });
+      request
+        .del('/topics/7', { id: 7, content: 'yay' })
+        .end(function(_, data) {
+          data.should.have.property('id', '7');
+          data.should.have.property('content', 'yay');
+          done(); // just done
+        })
+      ;
+    });
 
   });
 
