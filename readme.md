@@ -1,6 +1,6 @@
 # superagent-mocker
 
-[![Build Status](https://travis-ci.org/shuvalov-anton/superagent-mocker.svg)](https://travis-ci.org/shuvalov-anton/superagent-mocker)
+[![Build Status](https://travis-ci.org/rambler-digital-solutions/superagent-mocker.svg?branch=master)](https://travis-ci.org/rambler-digital-solutions/superagent-mocker)
 
 Pretty simple mocks for the CRUD and REST API.
 
