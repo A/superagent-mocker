@@ -45,13 +45,10 @@ function mock(superagent) {
  * TODO: Remove data
  */
 function match(method, url, data) {
-  var match;
-  var i = callbacks.length;
-  callbacks.forEach(function(callback) {
-    var m = callbacks[i-1].match(method, url, data);
-    if (m) match = m;
-  });
-  return match;
+  return callbacks.reduce(function(memo, cb) {
+    var m = cb.match(method, url, data);
+    return m ? m : memo;
+  }, {});
 }
 
 /**
