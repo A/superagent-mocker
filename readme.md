@@ -23,7 +23,7 @@ var mock = require('superagent-mocker')(request);
 
 ```js
 mock.get('/topics/:id', function(req) {
-  var id = req.param.id;
+  var id = req.params.id;
   return { id: req.params.id, content: 'Hello World!' };
 });
 
