@@ -48,7 +48,7 @@ function match(method, url, data) {
   return callbacks.reduce(function(memo, cb) {
     var m = cb.match(method, url, data);
     return m ? m : memo;
-  }, {});
+  }, null);
 }
 
 /**
