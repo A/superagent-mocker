@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/rambler-digital-solutions/superagent-mocker.svg?branch=master)](https://travis-ci.org/rambler-digital-solutions/superagent-mocker)
 
-Pretty simple mocks for the CRUD and REST API.
+REST API mocker for the browsers. LOOK MA NO BACKEND! 👐
+
+Written for [superagent](https://github.com/visionmedia/superagent).
 
 ## Install
 
