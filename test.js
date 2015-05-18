@@ -69,6 +69,19 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should be async', function(done) {
+      var isAsync = true;
+      mock.get('/async', function(req) {
+        isAsync = false;
+      });
+      request
+        .get('/async')
+        .end(function() {})
+      ;
+      isAsync.should.be.true;
+      done();
+    });
+
   });
 
 });
