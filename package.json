@@ -1,6 +1,6 @@
 {
   "name": "superagent-mocker",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Pretty simple mocks for the CRUD and REST API",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,9 @@
     "superagent",
     "crud",
     "mocks",
-    "stubs"
+    "stubs",
+    "rest",
+    "test"
   ],
   "author": "Anton <anton@shuvalov.info> (http://shuvalov.info/)",
   "license": "MIT",
