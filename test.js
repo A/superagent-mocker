@@ -76,7 +76,7 @@ describe('superagent mock', function() {
       });
       request
         .get('/async')
-        .end(function() {})
+        .end()
       ;
       isAsync.should.be.true;
       done();
