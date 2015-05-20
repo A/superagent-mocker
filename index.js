@@ -33,7 +33,6 @@ function mock(superagent) {
   // Patch Request.end()
   var oldEnd = superagent.Request.prototype.end;
   superagent.Request.prototype.end = function(cb) {
-    var self = this;
     var current = state.current;
     setTimeout(function() {
       current
