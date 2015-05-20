@@ -1,6 +1,6 @@
 {
   "name": "superagent-mocker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Pretty simple mocks for the CRUD and REST API",
   "main": "index.js",
   "scripts": {
