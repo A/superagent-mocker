@@ -1,3 +1,10 @@
+0.1.6 / 2015-06-14
+==================
+
+- fix: unmocked routes now works properly
+- fix: avoid patching when superagent is patched already
+- add history.md
+
 0.1.5 / 2015-05-20
 ==================
 
