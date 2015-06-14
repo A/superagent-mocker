@@ -82,6 +82,13 @@ describe('superagent mock', function() {
       done();
     });
 
+    it('should work correct with unmocked requests', function(done) {
+      request
+        .get('http://example.com')
+        .end(function(err, res) {
+          done(err);
+        });
+    });
   });
 
 });
