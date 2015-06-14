@@ -23,24 +23,31 @@ var callbacks = [];
  * Mock
  */
 function mock(superagent) {
+
   // The room for matched route
   var state = { current: null };
+
   // Patch superagent
   patch(superagent, 'get', 'GET', state);
   patch(superagent, 'post', 'POST', state);
   patch(superagent, 'put', 'PUT', state);
   patch(superagent, 'del', 'DELETE', state);
+
   // Patch Request.end()
   var oldEnd = superagent.Request.prototype.end;
   superagent.Request.prototype.end = function(cb) {
     var current = state.current;
-    setTimeout(function() {
-      current
-        ? cb(null, current())
-        : oldEnd.call(this, cb);
-    }, 0);
+    if (current) {
+      setTimeout(function() {
+        cb && cb(null, current());
+      }, 0);
+    } else {
+      oldEnd.call(this, cb);
+    }
   };
+
   return mock; // chaining
+
 }
 
 /**
