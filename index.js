@@ -24,6 +24,10 @@ var callbacks = [];
  */
 function mock(superagent) {
 
+  // don't patch if superagent was patched already
+  if (superagent._patchedBySuperagentMocker) return mock;
+  superagent._patchedBySuperagentMocker = true;
+
   // The room for matched route
   var state = { current: null };
 
