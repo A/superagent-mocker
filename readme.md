@@ -21,6 +21,23 @@ var request = require('superagent');
 var mock = require('superagent-mocker')(request);
 ```
 
+### Timeout
+
+You can provide custom, that can ve a function or a number. Just set
+`timeout` property to the `mock`:
+
+```js
+var mock = require('superagent-mocker');
+
+// set just number
+mock.timeout = 100;
+
+// Or function to get random
+mock.timeout = function () {
+  return Math.random() * 1e4 |0;
+}
+```
+
 ### Get
 
 ```js
