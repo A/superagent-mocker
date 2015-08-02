@@ -15,6 +15,12 @@ mock.put       = defineRoute.bind(null, 'PUT');
 mock.del       = defineRoute.bind(null, 'DELETE');
 
 /**
+ * Request timeout
+ * @type {number|function}
+ */
+mock.timeout    = 0;
+
+/**
  * List of registred callbacks
  */
 var callbacks = [];
@@ -44,7 +50,7 @@ function mock(superagent) {
     if (current) {
       setTimeout(function() {
         cb && cb(null, current());
-      }, 0);
+      }, value(mock.timeout));
     } else {
       oldEnd.call(this, cb);
     }
@@ -125,4 +131,12 @@ Route.prototype.match = function(method, url, body) {
   };
 };
 
-
+/**
+ * Exec function and return value, or just return arg
+ * @param {fn|any} val Value or fn to exec
+ */
+function value(val) {
+  return 'function' === typeof val
+    ? val()
+    : val;
+}
