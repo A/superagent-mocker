@@ -89,6 +89,30 @@ describe('superagent mock', function() {
           done(err);
         });
     });
+    it('should work with custom timeout', function(done) {
+      var startedAt = +new Date();
+      mock.timeout = 100;
+      request
+        .get('/async')
+        .end(function(err, res) {
+          var finishedAt = +new Date();
+          var offset = finishedAt - startedAt;
+          offset.should.be.above(mock.timeout - 1);
+          done(err);
+        });
+    });
+    it('should work with custom timeout function', function(done) {
+      var startedAt = +new Date();
+      mock.timeout = function () { return 200; };
+      request
+        .get('/async')
+        .end(function(err, res) {
+          var finishedAt = +new Date();
+          var offset = finishedAt - startedAt;
+          offset.should.be.above(199);
+          done(err);
+        });
+    });
   });
 
 });
