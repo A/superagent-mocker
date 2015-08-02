@@ -1,3 +1,8 @@
+0.2.0 / 2015-08-03
+==================
+
+- add ability to set custom timeout for requests [#8](https://github.com/rambler-digital-solutions/superagent-mocker/issues/8)
+
 0.1.6 / 2015-06-14
 ==================
 
