@@ -113,6 +113,18 @@ describe('superagent mock', function() {
           done(err);
         });
     });
-  });
 
+    it('should clear registered routes', function(done) {
+      mock.get('http://example.com', function(req){
+        throw Error('Route handler was called');
+      });
+      mock.clearRoutes();
+      request
+        .get('http://example.com')
+        .end(function(err, res) {
+          done(err);
+        });
+    });
+
+  });
 });
