@@ -76,6 +76,36 @@ request
 
 `mock.put()` and `mock.del()` methods works as well.
 
+### Teardown
+
+You can remove all of the route handlers by calling `mock.clearRoutes()`.  This is useful when defining temporary route handlers for unit tests.
+
+```js
+
+// Using the mocha testing framework
+define('My API module', function(){
+
+  beforeEach(function(){
+    // Guarentee each test knows exactly which routes are defined
+    mock.clearRoutes()
+  })
+
+  it('should GET /me', function(done){
+    mock.get('/me', function(){done()})
+    api.getMe()
+  })
+
+  it('should POST /me', function(done){
+    // The GET route handler no longer exists
+    // So there is no chance to see a false positive
+    // if the function actually calls GET /me
+    mock.post('/me', function(){done()})
+    api.saveMe()
+  })
+
+})
+```
+
 ### Note
 
 Sadly, but `request.send()` doesn't work :( Sorry
