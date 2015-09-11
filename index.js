@@ -26,6 +26,13 @@ mock.timeout    = 0;
 var callbacks = [];
 
 /**
+ * Unregister all callbacks
+ */
+mock.clearRoutes = function() {
+    callbacks.splice(0, callbacks.length)
+}
+
+/**
  * Mock
  */
 function mock(superagent) {
