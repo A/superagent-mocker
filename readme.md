@@ -86,7 +86,7 @@ request
     fromSend: 'Bar'
   })
   .end(function(err, data) {
-    console.log(data); // { id: 5, content: 'Hello world', fromPost: 'Foo', fromSend: 'Bar' }
+    console.log(data); // { id: 5, body: { content: 'Hello world', fromPost: 'Foo', fromSend: 'Bar' } }
   })
 ;
 ```
