@@ -126,5 +126,18 @@ describe('superagent mock', function() {
         });
     });
 
+
+    it('should provide error when method throws', function(done) {
+      var error = Error('This should be in the callback!');
+      mock.get('http://example.com', function(req) {
+        throw error;
+      });
+      request
+        .get('http://example.com')
+        .end(function(err, res) {
+          err.should.equal(error);
+          done();
+        });
+    });
   });
 });

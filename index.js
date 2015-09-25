@@ -56,7 +56,11 @@ function mock(superagent) {
     var current = state.current;
     if (current) {
       setTimeout(function() {
-        cb && cb(null, current());
+        try {
+          cb && cb(null, current());
+        } catch (ex) {
+          cb && cb(ex, null);
+        }
       }, value(mock.timeout));
     } else {
       oldEnd.call(this, cb);
