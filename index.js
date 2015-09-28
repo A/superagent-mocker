@@ -6,6 +6,53 @@
 var pathtoRegexp = require('path-to-regexp');
 
 /**
+ * Helpers
+ */
+
+/**
+ * Simple object test
+ * @param any obj Variable to test
+ * @return bool True if variable is an object
+ */
+function isObject(obj) {
+  return null != obj && 'object' == typeof obj;
+}
+
+/**
+ * Exec function and return value, or just return arg
+ * @param {fn|any} val Value or fn to exec
+ */
+function value(val) {
+  return 'function' === typeof val
+    ? val()
+    : val;
+}
+
+/**
+ * Object.assign replacement
+ * This will always create a new object which has all of the own
+ * properties of all objects passed.  It will ignore non-objects without error.
+ * @param ...obj object variable number of objects to merge
+ */
+function mergeObjects() {
+  var out = {};
+  var p;
+
+  for(var index in arguments) {
+    var arg = arguments[index]
+    if(isObject(arg)) {
+      for(var prop in arg) {
+        if(arg.hasOwnProperty(prop)) {
+          out[prop] = arg[prop];
+        }
+      }
+    }
+  }
+
+  return out;
+}
+
+/**
  * Expose public API
  */
 module.exports = mock;
@@ -21,15 +68,15 @@ mock.del       = defineRoute.bind(null, 'DELETE');
 mock.timeout    = 0;
 
 /**
- * List of registred callbacks
+ * List of registred routes
  */
-var callbacks = [];
+var routes = [];
 
 /**
- * Unregister all callbacks
+ * Unregister all routes
  */
 mock.clearRoutes = function() {
-    callbacks.splice(0, callbacks.length)
+    routes.splice(0, routes.length)
 }
 
 /**
@@ -42,7 +89,13 @@ function mock(superagent) {
   superagent._patchedBySuperagentMocker = true;
 
   // The room for matched route
-  var state = { current: null };
+  var state = {
+    current: null,
+    reqest: {
+      body: {},
+      headers: {}
+    }
+  };
 
   // Patch superagent
   patch(superagent, 'get', 'GET', state);
@@ -50,14 +103,16 @@ function mock(superagent) {
   patch(superagent, 'put', 'PUT', state);
   patch(superagent, 'del', 'DELETE', state);
 
+  var reqProto = superagent.Request.prototype;
+
   // Patch Request.end()
   var oldEnd = superagent.Request.prototype.end;
-  superagent.Request.prototype.end = function(cb) {
+  reqProto.end = function(cb) {
     var current = state.current;
     if (current) {
       setTimeout(function() {
         try {
-          cb && cb(null, current());
+          cb && cb(null, current(state.request));
         } catch (ex) {
           cb && cb(ex, null);
         }
@@ -66,6 +121,36 @@ function mock(superagent) {
       oldEnd.call(this, cb);
     }
   };
+
+  // Patch Request.set()
+  var oldSet = reqProto.set;
+  reqProto.set = function(key, val) {
+    if (!state.current) {
+      return oldSet(key, val);
+    }
+    // Recursively set keys if passed an object
+    if (isObject(key)) {
+      for (var key in field) {
+        this.set(key, field[key]);
+      }
+      return this;
+    }
+    if (typeof key !== 'string') {
+      throw new TypeError('Header keys must be strings.');
+    }
+    state.request.headers[key.toLowerCase()] = val;
+    return this;
+  }
+
+  // Patch Request.send()
+  var oldSend = reqProto.send
+  reqProto.send = function(data) {
+    if (!state.current) {
+      return oldSend(data);
+    }
+    state.request.body = mergeObjects(state.current.body, data);
+    return this;
+  }
 
   return mock; // chaining
 
@@ -76,7 +161,7 @@ function mock(superagent) {
  * TODO: Remove data
  */
 function match(method, url, data) {
-  return callbacks.reduce(function(memo, cb) {
+  return routes.reduce(function(memo, cb) {
     var m = cb.match(method, url, data);
     return m ? m : memo;
   }, null);
@@ -85,10 +170,10 @@ function match(method, url, data) {
 /**
  * Register url and callback for `get`
  */
-function defineRoute(method, url, callback) {
-  callbacks.push(new Route({
+function defineRoute(method, url, handler) {
+  routes.push(new Route({
     url: url,
-    callback: callback,
+    handler: handler,
     method: method
   }));
   return mock;
@@ -101,9 +186,11 @@ function patch(superagent, prop, method, state) {
   var old = superagent[prop];
   superagent[prop] = function (url, data, fn) {
     state.current = match(method, url, data);
-    return state.current
-      ? superagent(method, url, data, fn)
-      : old.call(this, url, data, fn);
+    state.request = {
+      headers: {},
+      body: {}
+    };
+    return old.call(this, url, data, fn);
   };
 }
 
@@ -111,10 +198,10 @@ function patch(superagent, prop, method, state) {
  * Route with given url
  */
 var Route = function Route(state) {
-  this.url    = state.url;
-  this.fn     = state.callback;
-  this.method = state.method;
-  this.regexp = pathtoRegexp(this.url, this.keys = []);
+  this.url     = state.url;
+  this.handler = state.handler;
+  this.method  = state.method;
+  this.regexp  = pathtoRegexp(this.url, this.keys = []);
 };
 
 /**
@@ -133,21 +220,13 @@ Route.prototype.match = function(method, url, body) {
     }
   }
   var route = this;
-  return function() {
-    return route.fn({
+  return function(req) {
+    return route.handler({
       url: url,
       params: params || {},
-      body: body || {}
+      body: mergeObjects(body, req.body),
+      headers: req.headers
     });
   };
 };
 
-/**
- * Exec function and return value, or just return arg
- * @param {fn|any} val Value or fn to exec
- */
-function value(val) {
-  return 'function' === typeof val
-    ? val()
-    : val;
-}

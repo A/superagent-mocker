@@ -40,41 +40,58 @@ mock.timeout = function () {
 
 ### Get
 
+You may set headers using the `mock.set()`.  To ensure header keys are not case sensitive,
+all keys will be transformed to lower case (see example).
+
 ```js
 mock.get('/topics/:id', function(req) {
   return {
     id: req.params.id,
-    content: 'Hello World!'
+    content: 'Hello World!',
+    headers: req.headers
   };
 });
 
 request
   .get('/topics/1')
+  .set({ 'X-Custom-Header': 'value of header' })
   .end(function(err, data) {
-    console.log(data); // { id: 1, content: 'Hello World' }
+    console.log(data); // { id: 1, content: 'Hello World', headers: { 'x-custom-header': 'value of header' } }
   })
 ;
 ```
 
+`mock.del()` works in a similar way.
+
 ### Post
+
+You may set the body of a `POST` request as the second parameter of `mock.post()`
+or in `mock.send()`.  Values set in `send()` will overwrite previously set values.
 
 ```js
 mock.post('/topics/:id', function(req) {
   return {
     id: req.params.id,
-    content: req.body.content
+    body: req.body
   };
 });
 
 request
-  .post('/topics/5', { content: 'Hello world' })
+  .post('/topics/5', {
+    content: 'I will be overwritten',
+    fromPost: 'Foo'
+  })
+  .send({
+    content: 'Hello world',
+    fromSend: 'Bar'
+  })
   .end(function(err, data) {
-    console.log(data); // { id: 5, content: 'Hello world' }
+    console.log(data); // { id: 5, body: { content: 'Hello world', fromPost: 'Foo', fromSend: 'Bar' } }
   })
 ;
 ```
 
-`mock.put()` and `mock.del()` methods works as well.
+`mock.put()` method works in a similar way.
 
 ### Teardown
 
@@ -105,10 +122,6 @@ define('My API module', function(){
 
 })
 ```
-
-### Note
-
-Sadly, but `request.send()` doesn't work :( Sorry
 
 ## License
 

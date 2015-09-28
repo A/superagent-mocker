@@ -16,26 +16,43 @@ describe('superagent mock', function() {
     it('should mock for get', function(done) {
       mock.get('/topics/:id', function(req) {
         req.params.id.should.be.equal('1');
-        return { id: req.params.id };
+        req.headers['my-header'].should.be.equal('my-Value')
+        return {
+          id: req.params.id,
+          head: req.headers['my-header']
+        };
       });
-      request.get('/topics/1').end(function(_, data) {
-        data.should.have.property('id', '1');
-        done();
-      });
+      request.get('/topics/1')
+        .set('My-Header', 'my-Value')
+        .end(function(_, data) {
+          data.should.have.property('id', '1');
+          data.should.have.property('head', 'my-Value')
+          done();
+        })
+      ;
     });
 
     it('should mock for post', function(done) {
       mock.post('/topics/:id', function(req) {
         return {
           id: req.params.id,
-          content: req.body.content
+          content: req.body.content,
+          fromSend: req.body.fromSend,
+          head: req.headers['my-header']
         };
       });
       request
-        .post('/topics/5', { content: 'Hello world' })
+        .post('/topics/5', { content: 'Should not appear' })
+        .send({
+          fromSend: 'Hello universe',
+          content: 'Hello world'
+        })
+        .set('My-Header', 'my-Value')
         .end(function(_, data) {
           data.should.have.property('id', '5');
           data.should.have.property('content', 'Hello world');
+          data.should.have.property('fromSend', 'Hello universe');
+          data.should.have.property('head', 'my-Value');
           done();
         })
       ;
@@ -89,6 +106,7 @@ describe('superagent mock', function() {
           done(err);
         });
     });
+
     it('should work with custom timeout', function(done) {
       var startedAt = +new Date();
       mock.timeout = 100;
@@ -101,6 +119,7 @@ describe('superagent mock', function() {
           done(err);
         });
     });
+
     it('should work with custom timeout function', function(done) {
       var startedAt = +new Date();
       mock.timeout = function () { return 200; };
