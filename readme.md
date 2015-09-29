@@ -1,6 +1,6 @@
 # superagent-mocker
 
-[![Build Status](https://travis-ci.org/rambler-digital-solutions/superagent-mocker.svg?branch=master)](https://travis-ci.org/rambler-digital-solutions/superagent-mocker)
+[![Build Status](https://travis-ci.org/shuvalov-anton/superagent-mocker.svg?branch=master)](https://travis-ci.org/shuvalov-anton/superagent-mocker)
 
 REST API mocker for the browsers. LOOK MA NO BACKEND! 👐
 
