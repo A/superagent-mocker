@@ -30,7 +30,7 @@ var routes = [];
  * Unregister all routes
  */
 mock.clearRoutes = function() {
-    routes.splice(0, routes.length)
+  routes.splice(0, routes.length)
 }
 
 /**
