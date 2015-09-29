@@ -14,6 +14,7 @@ describe('superagent mock', function() {
 
   beforeEach(function() {
     mock.clearRoutes();
+    mock.timeout = 0;
   });
 
   describe('API', function() {
@@ -124,14 +125,15 @@ describe('superagent mock', function() {
     });
 
     it('should clear registered routes', function(done) {
-      mock.get('http://example.com', function(req){
-        throw Error('Route handler was called');
-      });
+      mock.get('/topics', noop);
       mock.clearRoutes();
       request
-        .get('http://example.com')
+        .get('/topics')
         .end(function(err, res) {
-          done(err);
+          should.throws(function() {
+            should.ifError(err);
+          }, /ECONNREFUSED/);
+          done();
         });
     });
 
