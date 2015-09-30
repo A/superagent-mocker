@@ -5,52 +5,6 @@
  */
 var pathtoRegexp = require('path-to-regexp');
 
-/**
- * Helpers
- */
-
-/**
- * Simple object test
- * @param any obj Variable to test
- * @return bool True if variable is an object
- */
-function isObject(obj) {
-  return null != obj && 'object' == typeof obj;
-}
-
-/**
- * Exec function and return value, or just return arg
- * @param {fn|any} val Value or fn to exec
- */
-function value(val) {
-  return 'function' === typeof val
-    ? val()
-    : val;
-}
-
-/**
- * Object.assign replacement
- * This will always create a new object which has all of the own
- * properties of all objects passed.  It will ignore non-objects without error.
- * @param ...obj object variable number of objects to merge
- */
-function mergeObjects() {
-  var out = {};
-  var p;
-
-  for(var index in arguments) {
-    var arg = arguments[index]
-    if(isObject(arg)) {
-      for(var prop in arg) {
-        if(arg.hasOwnProperty(prop)) {
-          out[prop] = arg[prop];
-        }
-      }
-    }
-  }
-
-  return out;
-}
 
 /**
  * Expose public API
@@ -76,7 +30,7 @@ var routes = [];
  * Unregister all routes
  */
 mock.clearRoutes = function() {
-    routes.splice(0, routes.length)
+  routes.splice(0, routes.length)
 }
 
 /**
@@ -230,3 +184,50 @@ Route.prototype.match = function(method, url, body) {
   };
 };
 
+
+/**
+ * Helpers
+ */
+
+/**
+ * Simple object test
+ * @param any obj Variable to test
+ * @return bool True if variable is an object
+ */
+function isObject(obj) {
+  return null != obj && 'object' == typeof obj;
+}
+
+/**
+ * Exec function and return value, or just return arg
+ * @param {fn|any} val Value or fn to exec
+ */
+function value(val) {
+  return 'function' === typeof val
+    ? val()
+    : val;
+}
+
+/**
+ * Object.assign replacement
+ * This will always create a new object which has all of the own
+ * properties of all objects passed.  It will ignore non-objects without error.
+ * @param ...obj object variable number of objects to merge
+ */
+function mergeObjects() {
+  var out = {};
+  var p;
+
+  for(var index in arguments) {
+    var arg = arguments[index]
+    if(isObject(arg)) {
+      for(var prop in arg) {
+        if(arg.hasOwnProperty(prop)) {
+          out[prop] = arg[prop];
+        }
+      }
+    }
+  }
+
+  return out;
+}

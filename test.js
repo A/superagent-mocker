@@ -8,51 +8,40 @@
 var request = require('superagent');
 var mock    = require('./')(request);
 var should  = require('should');
+var noop    = function() {};
 
 describe('superagent mock', function() {
+
+  beforeEach(function() {
+    mock.clearRoutes();
+    mock.timeout = 0;
+  });
 
   describe('API', function() {
 
     it('should mock for get', function(done) {
       mock.get('/topics/:id', function(req) {
         req.params.id.should.be.equal('1');
-        req.headers['my-header'].should.be.equal('my-Value')
-        return {
-          id: req.params.id,
-          head: req.headers['my-header']
-        };
+        return { id: req.params.id };
       });
-      request.get('/topics/1')
-        .set('My-Header', 'my-Value')
-        .end(function(_, data) {
-          data.should.have.property('id', '1');
-          data.should.have.property('head', 'my-Value')
-          done();
-        })
-      ;
+      request.get('/topics/1').end(function(_, data) {
+        data.should.have.property('id', '1');
+        done();
+      });
     });
 
     it('should mock for post', function(done) {
       mock.post('/topics/:id', function(req) {
         return {
           id: req.params.id,
-          content: req.body.content,
-          fromSend: req.body.fromSend,
-          head: req.headers['my-header']
+          content: req.body.content
         };
       });
       request
-        .post('/topics/5', { content: 'Should not appear' })
-        .send({
-          fromSend: 'Hello universe',
-          content: 'Hello world'
-        })
-        .set('My-Header', 'my-Value')
+        .post('/topics/5', { content: 'Hello world' })
         .end(function(_, data) {
           data.should.have.property('id', '5');
           data.should.have.property('content', 'Hello world');
-          data.should.have.property('fromSend', 'Hello universe');
-          data.should.have.property('head', 'my-Value');
           done();
         })
       ;
@@ -110,8 +99,9 @@ describe('superagent mock', function() {
     it('should work with custom timeout', function(done) {
       var startedAt = +new Date();
       mock.timeout = 100;
+      mock.get('/timeout', noop);
       request
-        .get('/async')
+        .get('/timeout')
         .end(function(err, res) {
           var finishedAt = +new Date();
           var offset = finishedAt - startedAt;
@@ -122,9 +112,10 @@ describe('superagent mock', function() {
 
     it('should work with custom timeout function', function(done) {
       var startedAt = +new Date();
+      mock.get('/timeout', noop);
       mock.timeout = function () { return 200; };
       request
-        .get('/async')
+        .get('/timeout')
         .end(function(err, res) {
           var finishedAt = +new Date();
           var offset = finishedAt - startedAt;
@@ -134,17 +125,17 @@ describe('superagent mock', function() {
     });
 
     it('should clear registered routes', function(done) {
-      mock.get('http://example.com', function(req){
-        throw Error('Route handler was called');
-      });
+      mock.get('/topics', noop);
       mock.clearRoutes();
       request
-        .get('http://example.com')
+        .get('/topics')
         .end(function(err, res) {
-          done(err);
+          should.throws(function() {
+            should.ifError(err);
+          }, /ECONNREFUSED/);
+          done();
         });
     });
-
 
     it('should provide error when method throws', function(done) {
       var error = Error('This should be in the callback!');
@@ -158,5 +149,52 @@ describe('superagent mock', function() {
           done();
         });
     });
+
+    it('should support headers', function(done) {
+      mock.get('/topics/:id', function(req) {
+        return req.headers;
+      });
+      request.get('/topics/1')
+        .set('My-Header', 'my-Value')
+        .set('User-Agent', 'Opera Mini')
+        .end(function(_, data) {
+          // lowercase
+          data.should.have.property('my-header', 'my-Value')
+          data.should.have.property('user-agent', 'Opera Mini')
+          done();
+        })
+      ;
+    });
+
+    it('should pass data from send()', function(done) {
+      mock.post('/topics/:id', function(req) {
+        return req.body;
+      });
+      request
+        .post('/topics/5')
+        .send({ content: 'Hello world' })
+        .end(function(_, data) {
+          data.should.have.property('content', 'Hello world');
+          done();
+        })
+      ;
+    });
+
+    it('should rewrite post() data by send()', function(done) {
+      mock.post('/topics/:id', function(req) {
+        return req.body;
+      });
+      request
+        .post('/topics/5', { content: 'Hello Universe'})
+        .send({ content: 'Hello world', title: 'Yay!' })
+        .end(function(_, data) {
+          data.should.have.property('title', 'Yay!');
+          data.should.have.property('content', 'Hello world');
+          done();
+        })
+      ;
+    });
+
   });
+
 });
