@@ -215,10 +215,10 @@ function value(val) {
  * @param ...obj object variable number of objects to merge
  */
 function mergeObjects() {
-  var out = {};
-  var p;
+  var out = {},
+      p;
 
-  for(var index in arguments) {
+  for(var index = 0; index < arguments.length; index++) {
     var arg = arguments[index]
     if(isObject(arg)) {
       for(var prop in arg) {
