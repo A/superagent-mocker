@@ -4,7 +4,10 @@
   "description": "Pretty simple mocks for the CRUD and REST API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "make-cov": "jscoverage index.js index-cov.js",
+    "cov": "npm run make-cov; SM_COV=1 mocha -R html-cov > coverage.html",
+    "coveralls": "npm run make-cov; SM_COV=1 mocha -R mocha-lcov-reporter | coveralls"
   },
   "repository": {
     "type": "git",
@@ -25,7 +28,10 @@
   },
   "homepage": "https://github.com/shuvalov-anton/superagent-mocker",
   "devDependencies": {
+    "coveralls": "^2.11.4",
+    "jscoverage": "^0.6.0",
     "mocha": "^2.2.4",
+    "mocha-lcov-reporter": "^1.0.0",
     "should": "^6.0.1",
     "superagent": "^1.2.0"
   },
