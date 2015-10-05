@@ -168,6 +168,20 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should throw error when header isn\'t a string', function() {
+      mock.get('/topics/:id', function(req) {
+        return req.headers;
+      });
+      should.throws(function() {
+        request.get('/topics/1')
+          .set(42, 'my-Value')
+          .end(function(_, data) {
+            done();
+          });
+        should.ifError(err);
+      }, /Header keys must be strings/);
+    });
+
     it('should pass data from send()', function(done) {
       mock.post('/topics/:id', function(req) {
         return req.body;
