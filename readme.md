@@ -1,7 +1,7 @@
 # superagent-mocker
 
 [![Build Status](https://travis-ci.org/shuvalov-anton/superagent-mocker.svg?branch=master)](https://travis-ci.org/shuvalov-anton/superagent-mocker)
-[![Coverage Status](https://coveralls.io/repos/shuvalov-anton/superagent-mocker/badge.svg?branch=master&service=github)](https://coveralls.io/github/shuvalov-anton/superagent-mocker?branch=master)
+[![Coverage Status](https://coveralls.io/repos/shuvalov-anton/superagent-mocker/badge.svg?service=github&branch=master)](https://coveralls.io/github/shuvalov-anton/superagent-mocker?branch=master)
 
 REST API mocker for the browsers. LOOK MA NO BACKEND! 👐
 
