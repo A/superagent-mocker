@@ -6,9 +6,11 @@
  * Dependencies
  */
 var request = require('superagent');
-var mock    = require('./')(request);
 var should  = require('should');
-var noop    = function() {};
+var mock    = process.env.SM_COV
+                ? require('./index-cov')(request)
+                : require('./index')(request);
+
 
 describe('superagent mock', function() {
 
@@ -198,3 +200,10 @@ describe('superagent mock', function() {
   });
 
 });
+
+
+
+/**
+ * Just noop
+ */
+function noop() {};
