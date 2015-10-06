@@ -1,7 +1,11 @@
-0.2.0 / 2015-08-03
+0.2.0 / 2015-10-07
 ==================
 
-- add ability to set custom timeout for requests [#8](https://github.com/rambler-digital-solutions/superagent-mocker/issues/8)
+- added ability to set custom timeout for requests [#8](https://github.com/shuvalov-anton/superagent-mocker/issues/8)
+- added a method to clear all registered handlers [#10](https://github.com/shuvalov-anton/superagent-mocker/issues/10)
+- Pass errors thrown in mock into the callback [#12](https://github.com/shuvalov-anton/superagent-mocker/issues/10)
+- added support for headers and send method [#11](https://github.com/shuvalov-anton/superagent-mocker/issues/11)
+- tests improved
 
 0.1.6 / 2015-06-14
 ==================
