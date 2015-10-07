@@ -84,8 +84,8 @@ function mock(superagent) {
     }
     // Recursively set keys if passed an object
     if (isObject(key)) {
-      for (var key in field) {
-        this.set(key, field[key]);
+      for (var field in key) {
+        this.set(field, key[field]);
       }
       return this;
     }

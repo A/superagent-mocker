@@ -168,6 +168,22 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should support multiple headers', function(done) {
+      mock.get('/', function(req) {
+        return req.headers;
+      });
+      request.get('/')
+        .set({
+          'My-Header': 'my-Value',
+          'User-Agent': 'Opera Mini',
+        })
+        .end(function(_, data) {
+          data.should.have.property('my-header', 'my-Value')
+          data.should.have.property('user-agent', 'Opera Mini')
+          done();
+        })
+    })
+
     it('should throw error when header isn\'t a string', function() {
       mock.get('/topics/:id', function(req) {
         return req.headers;
