@@ -80,7 +80,7 @@ function mock(superagent) {
   var oldSet = reqProto.set;
   reqProto.set = function(key, val) {
     if (!state.current) {
-      return oldSet(key, val);
+      return oldSet.call(this, key, val);
     }
     // Recursively set keys if passed an object
     if (isObject(key)) {
@@ -94,17 +94,17 @@ function mock(superagent) {
     }
     state.request.headers[key.toLowerCase()] = val;
     return this;
-  }
+  };
 
   // Patch Request.send()
-  var oldSend = reqProto.send
+  var oldSend = reqProto.send;
   reqProto.send = function(data) {
     if (!state.current) {
-      return oldSend(data);
+      return oldSend.call(this, data);
     }
     state.request.body = mergeObjects(state.current.body, data);
     return this;
-  }
+  };
 
   return mock; // chaining
 
