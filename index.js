@@ -28,6 +28,18 @@ mock.timeout    = 0;
 var routes = [];
 
 /**
+ * List of methods to patch
+ * @type {string[]}
+ */
+var methods = ['get', 'post', 'put', 'patch', 'del'];
+
+/**
+ * Original superagent methods
+ * @type {{}}
+ */
+var originalMethods = {};
+
+/**
  * Unregister all routes
  */
 mock.clearRoutes = function() {
@@ -61,17 +73,14 @@ function mock(superagent) {
     }
   };
 
-  // Patch superagent
-  patch(superagent, 'get', 'GET', state);
-  patch(superagent, 'post', 'POST', state);
-  patch(superagent, 'put', 'PUT', state);
-  patch(superagent, 'patch', 'PATCH', state);
-  patch(superagent, 'del', 'DELETE', state);
+  methods.forEach(function(method) {
+    patch(superagent, method, method.toUpperCase(), state);
+  });
 
   var reqProto = superagent.Request.prototype;
 
   // Patch Request.end()
-  var oldEnd = superagent.Request.prototype.end;
+  var oldEnd = originalMethods.end = superagent.Request.prototype.end;
   reqProto.end = function(cb) {
     var current = state.current;
     if (current) {
@@ -88,7 +97,7 @@ function mock(superagent) {
   };
 
   // Patch Request.set()
-  var oldSet = reqProto.set;
+  var oldSet = originalMethods.set = reqProto.set;
   reqProto.set = function(key, val) {
     if (!state.current) {
       return oldSet.call(this, key, val);
@@ -108,7 +117,7 @@ function mock(superagent) {
   };
 
   // Patch Request.send()
-  var oldSend = reqProto.send;
+  var oldSend = originalMethods.send = reqProto.send;
   reqProto.send = function(data) {
     if (!state.current) {
       return oldSend.call(this, data);
@@ -120,6 +129,18 @@ function mock(superagent) {
   return mock; // chaining
 
 }
+
+mock.unmock = function(superagent) {
+  methods.forEach(function(method) {
+    superagent[method] = originalMethods[method];
+  });
+
+  var reqProto = superagent.Request.prototype;
+
+  ['end', 'set', 'send'].forEach(function(method) {
+    reqProto[method] = originalMethods[method];
+  });
+};
 
 /**
  * find route that matched with url and method
@@ -148,7 +169,7 @@ function defineRoute(method, url, handler) {
  * Patch superagent method
  */
 function patch(superagent, prop, method, state) {
-  var old = superagent[prop];
+  var old = originalMethods[prop] = superagent[prop];
   superagent[prop] = function (url, data, fn) {
     state.current = match(method, url, data);
     state.request = {
