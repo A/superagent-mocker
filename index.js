@@ -14,6 +14,7 @@ mock.get       = defineRoute.bind(null, 'GET');
 mock.post      = defineRoute.bind(null, 'POST');
 mock.put       = defineRoute.bind(null, 'PUT');
 mock.del       = defineRoute.bind(null, 'DELETE');
+mock.patch     = defineRoute.bind(null, 'PATCH');
 
 /**
  * Request timeout
@@ -31,7 +32,16 @@ var routes = [];
  */
 mock.clearRoutes = function() {
   routes.splice(0, routes.length)
-}
+};
+
+/**
+ * Unregister specific route
+ */
+mock.clearRoute = function(method, url) {
+  routes = routes.filter(function(route) {
+    return route.url !== url && route.method.toLowerCase() !== method;
+  });
+};
 
 /**
  * Mock
@@ -55,6 +65,7 @@ function mock(superagent) {
   patch(superagent, 'get', 'GET', state);
   patch(superagent, 'post', 'POST', state);
   patch(superagent, 'put', 'PUT', state);
+  patch(superagent, 'patch', 'PATCH', state);
   patch(superagent, 'del', 'DELETE', state);
 
   var reqProto = superagent.Request.prototype;
