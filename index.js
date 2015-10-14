@@ -28,12 +28,6 @@ mock.timeout    = 0;
 var routes = [];
 
 /**
- * List of methods to patch
- * @type {string[]}
- */
-var methods = ['get', 'post', 'put', 'patch', 'del'];
-
-/**
  * Original superagent methods
  * @type {{}}
  */
@@ -73,9 +67,11 @@ function mock(superagent) {
     }
   };
 
-  methods.forEach(function(method) {
-    patch(superagent, method, method.toUpperCase(), state);
-  });
+  patch(superagent, 'get', 'GET', state);
+  patch(superagent, 'post', 'POST', state);
+  patch(superagent, 'put', 'PUT', state);
+  patch(superagent, 'patch', 'PATCH', state);
+  patch(superagent, 'del', 'DELETE', state);
 
   var reqProto = superagent.Request.prototype;
 
@@ -131,7 +127,7 @@ function mock(superagent) {
 }
 
 mock.unmock = function(superagent) {
-  methods.forEach(function(method) {
+  ['get', 'post', 'put', 'patch', 'del'].forEach(function(method) {
     superagent[method] = originalMethods[method];
   });
 
