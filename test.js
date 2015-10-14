@@ -63,6 +63,20 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should mock for patch', function(done) {
+      mock.patch('/topics/:id', function(req) {
+        return { id: req.params.id, content: req.body.content };
+      });
+      request
+        .patch('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .end(function(_, data) {
+          data.should.have.property('id', '7');
+          data.should.have.property('content', 'hello world, bitch!11');
+          done();
+        })
+      ;
+    });
+
     it('should mock for delete', function(done) {
       mock.del('/topics/:id', function(req) {
         return { id: req.params.id, content: req.body.content };
