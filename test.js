@@ -11,7 +11,6 @@ var mock    = process.env.SM_COV
                 ? require('./index-cov')(request)
                 : require('./index')(request);
 
-
 describe('superagent mock', function() {
 
   beforeEach(function() {
@@ -55,6 +54,20 @@ describe('superagent mock', function() {
       });
       request
         .put('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .end(function(_, data) {
+          data.should.have.property('id', '7');
+          data.should.have.property('content', 'hello world, bitch!11');
+          done();
+        })
+      ;
+    });
+
+    it('should mock for patch', function(done) {
+      mock.patch('/topics/:id', function(req) {
+        return { id: req.params.id, content: req.body.content };
+      });
+      request
+        .patch('/topics/7', { id: 7, content: 'hello world, bitch!11' })
         .end(function(_, data) {
           data.should.have.property('id', '7');
           data.should.have.property('content', 'hello world, bitch!11');
@@ -139,6 +152,29 @@ describe('superagent mock', function() {
         });
     });
 
+    it('should clear registered specific route', function(done) {
+      mock
+        .get('/topics', noop)
+        .get('/posters', function() {
+          return { id: 7 };
+        });
+      mock.clearRoute('get', '/topics');
+      request
+        .get('/topics')
+        .end(function(err, res) {
+          should.throws(function() {
+            should.ifError(err);
+          }, /ECONNREFUSED/);
+
+          request
+            .get('/posters')
+            .end(function(_, data) {
+              data.should.have.property('id', 7);
+              done();
+            });
+        });
+    });
+
     it('should provide error when method throws', function(done) {
       var error = Error('This should be in the callback!');
       mock.get('http://example.com', function(req) {
@@ -217,7 +253,7 @@ describe('superagent mock', function() {
         return req.body;
       });
       request
-        .post('/topics/5', { content: 'Hello Universe'})
+        .post('/topics/5', { content: 'Hello Universe' })
         .send({ content: 'Hello world', title: 'Yay!' })
         .end(function(_, data) {
           data.should.have.property('title', 'Yay!');
@@ -227,11 +263,14 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should remove patches by unmock()', function() {
+      mock.unmock(request);
+      (request._patchedBySuperagentMocker === void 0).should.be.true;
+    });
+
   });
 
 });
-
-
 
 /**
  * Just noop

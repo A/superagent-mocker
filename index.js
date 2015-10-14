@@ -5,7 +5,6 @@
  */
 var pathtoRegexp = require('path-to-regexp');
 
-
 /**
  * Expose public API
  */
@@ -14,6 +13,7 @@ mock.get       = defineRoute.bind(null, 'GET');
 mock.post      = defineRoute.bind(null, 'POST');
 mock.put       = defineRoute.bind(null, 'PUT');
 mock.del       = defineRoute.bind(null, 'DELETE');
+mock.patch     = defineRoute.bind(null, 'PATCH');
 
 /**
  * Request timeout
@@ -27,11 +27,38 @@ mock.timeout    = 0;
 var routes = [];
 
 /**
+ * Original superagent methods
+ * @type {{}}
+ */
+var originalMethods = {};
+
+/**
  * Unregister all routes
  */
 mock.clearRoutes = function() {
   routes.splice(0, routes.length)
-}
+};
+
+/**
+ * Map api method to http method
+ */
+var methodsMapping = {
+  get: 'GET',
+  post: 'POST',
+  put: 'PUT',
+  del: 'DELETE',
+  patch: 'PATCH'
+};
+
+/**
+ * Unregister specific route
+ */
+mock.clearRoute = function(method, url) {
+  method = methodsMapping[method] || method;
+  routes = routes.filter(function(route) {
+    return !(route.url === url && route.method === method);
+  });
+};
 
 /**
  * Mock
@@ -51,16 +78,18 @@ function mock(superagent) {
     }
   };
 
-  // Patch superagent
-  patch(superagent, 'get', 'GET', state);
-  patch(superagent, 'post', 'POST', state);
-  patch(superagent, 'put', 'PUT', state);
-  patch(superagent, 'del', 'DELETE', state);
+  // patch api methods (http)
+  for (var method in methodsMapping) {
+    if (methodsMapping.hasOwnProperty(method)) {
+      var httpMethod = methodsMapping[method];
+      patch(superagent, method, httpMethod, state);
+    }
+  }
 
   var reqProto = superagent.Request.prototype;
 
   // Patch Request.end()
-  var oldEnd = superagent.Request.prototype.end;
+  var oldEnd = originalMethods.end = superagent.Request.prototype.end;
   reqProto.end = function(cb) {
     var current = state.current;
     if (current) {
@@ -77,10 +106,10 @@ function mock(superagent) {
   };
 
   // Patch Request.set()
-  var oldSet = reqProto.set;
+  var oldSet = originalMethods.set = reqProto.set;
   reqProto.set = function(key, val) {
     if (!state.current) {
-      return oldSet(key, val);
+      return oldSet.call(this, key, val);
     }
     // Recursively set keys if passed an object
     if (isObject(key)) {
@@ -94,21 +123,35 @@ function mock(superagent) {
     }
     state.request.headers[key.toLowerCase()] = val;
     return this;
-  }
+  };
 
   // Patch Request.send()
-  var oldSend = reqProto.send
+  var oldSend = originalMethods.send = reqProto.send;
   reqProto.send = function(data) {
     if (!state.current) {
-      return oldSend(data);
+      return oldSend.call(this, data);
     }
     state.request.body = mergeObjects(state.current.body, data);
     return this;
-  }
+  };
 
   return mock; // chaining
 
 }
+
+mock.unmock = function(superagent) {
+  ['get', 'post', 'put', 'patch', 'del'].forEach(function(method) {
+    superagent[method] = originalMethods[method];
+  });
+
+  var reqProto = superagent.Request.prototype;
+
+  ['end', 'set', 'send'].forEach(function(method) {
+    reqProto[method] = originalMethods[method];
+  });
+
+  delete superagent._patchedBySuperagentMocker;
+};
 
 /**
  * find route that matched with url and method
@@ -137,7 +180,7 @@ function defineRoute(method, url, handler) {
  * Patch superagent method
  */
 function patch(superagent, prop, method, state) {
-  var old = superagent[prop];
+  var old = originalMethods[prop] = superagent[prop];
   superagent[prop] = function (url, data, fn) {
     state.current = match(method, url, data);
     state.request = {

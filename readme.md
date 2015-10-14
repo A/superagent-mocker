@@ -92,7 +92,7 @@ request
 ;
 ```
 
-`mock.put()` method works in a similar way.
+`mock.put()`, `mock.patch()` methods works in a similar way.
 
 ### Teardown
 
@@ -123,6 +123,24 @@ define('My API module', function(){
 
 })
 ```
+
+Or you can remove only one specified route (by method and url)
+
+```js
+// to register route
+mock.get('/me', function(){done()})
+
+...
+
+// to remove registered handler
+mock.clearRoute('get', '/me');
+
+```
+
+### Rollback library effect
+
+In some cases it will be useful to remove patches from superagent lib after using mocks.
+In this cases you can use ```mock.unmock()``` method, that will rollback all patches that ```mock(superagent)``` call make.
 
 ## License
 
