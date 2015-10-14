@@ -5,7 +5,6 @@
  */
 var pathtoRegexp = require('path-to-regexp');
 
-
 /**
  * Expose public API
  */
@@ -41,11 +40,23 @@ mock.clearRoutes = function() {
 };
 
 /**
+ * Map api method to http method
+ */
+var methodsMapping = {
+  get: 'GET',
+  post: 'POST',
+  put: 'PUT',
+  del: 'DELETE',
+  patch: 'PATCH'
+};
+
+/**
  * Unregister specific route
  */
 mock.clearRoute = function(method, url) {
+  method = methodsMapping[method] || method;
   routes = routes.filter(function(route) {
-    return route.url !== url && route.method.toLowerCase() !== method;
+    return !(route.url === url && route.method === method);
   });
 };
 
@@ -67,11 +78,13 @@ function mock(superagent) {
     }
   };
 
-  patch(superagent, 'get', 'GET', state);
-  patch(superagent, 'post', 'POST', state);
-  patch(superagent, 'put', 'PUT', state);
-  patch(superagent, 'patch', 'PATCH', state);
-  patch(superagent, 'del', 'DELETE', state);
+  // patch api methods (http)
+  for (var method in methodsMapping) {
+    if (methodsMapping.hasOwnProperty(method)) {
+      var httpMethod = methodsMapping[method];
+      patch(superagent, method, httpMethod, state);
+    }
+  }
 
   var reqProto = superagent.Request.prototype;
 
