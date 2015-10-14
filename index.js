@@ -149,6 +149,8 @@ mock.unmock = function(superagent) {
   ['end', 'set', 'send'].forEach(function(method) {
     reqProto[method] = originalMethods[method];
   });
+
+  delete superagent._patchedBySuperagentMocker;
 };
 
 /**

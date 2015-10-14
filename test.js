@@ -263,6 +263,11 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should remove patches by unmock()', function() {
+      mock.unmock(request);
+      (request._patchedBySuperagentMocker === void 0).should.be.true;
+    });
+
   });
 
 });
