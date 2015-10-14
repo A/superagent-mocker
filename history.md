@@ -1,3 +1,11 @@
+0.3.0 / 2015-10-07
+==================
+
+- added `clearRoute()` to remove routes by url and http-method [#19](https://github.com/shuvalov-anton/superagent-mocker/issues/19)
+- added `unmock` method to disable mocker [#19](https://github.com/shuvalov-anton/superagent-mocker/issues/19)
+- fixed missed calling context [#19](https://github.com/shuvalov-anton/superagent-mocker/issues/19)
+
+
 0.2.0 / 2015-10-07
 ==================
 
