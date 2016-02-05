@@ -52,10 +52,10 @@ describe('superagent mock', function() {
         return { id: req.params.id, content: req.body.content };
       });
       request
-        .put('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .put('/topics/7', { id: 7, content: 'hello world!11' })
         .end(function(_, data) {
           data.should.have.property('id', '7');
-          data.should.have.property('content', 'hello world, bitch!11');
+          data.should.have.property('content', 'hello world!11');
           done();
         });
     });
@@ -65,10 +65,10 @@ describe('superagent mock', function() {
         return { id: req.params.id, content: req.body.content };
       });
       request
-        .patch('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .patch('/topics/7', { id: 7, content: 'hello world!11' })
         .end(function(_, data) {
           data.should.have.property('id', '7');
-          data.should.have.property('content', 'hello world, bitch!11');
+          data.should.have.property('content', 'hello world!11');
           done();
         });
     });
