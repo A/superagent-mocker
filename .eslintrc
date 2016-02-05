@@ -7,11 +7,11 @@
   "rules": {
     "quotes": [2, "single"],
     "strict": [2, "global"],
-    "no-unused-vars": false,
-    "no-unused-expressions": false,
-    "yoda": true,
-    "curly": false,
-    "no-use-before-define": false,
-    "no-multi-spaces": false
+    "no-unused-vars": 0,
+    "no-unused-expressions": 0,
+    "yoda": 2,
+    "curly": 0,
+    "no-use-before-define": 0,
+    "no-multi-spaces": 0
   }
 }
