@@ -94,15 +94,15 @@ function mock(superagent) {
     var current = state.current;
     if (current) {
       setTimeout(function() {
-        var response = current(state.request);
-        if (response.status !== 200) {
-          cb && cb(response, null);
-        } else {
-          try {
+        try {
+          var response = current(state.request);
+          if (response.status !== 200) {
+            cb && cb(response, null);
+          } else {
             cb && cb(null, response);
-          } catch (ex) {
-            cb && cb(ex, null);
           }
+        } catch (ex) {
+          cb && cb(ex, null);
         }
       }, value(mock.timeout));
     } else {
