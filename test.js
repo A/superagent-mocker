@@ -44,8 +44,7 @@ describe('superagent mock', function() {
           data.should.have.property('id', '5');
           data.should.have.property('content', 'Hello world');
           done();
-        })
-      ;
+        });
     });
 
     it('should mock for put', function(done) {
@@ -53,13 +52,12 @@ describe('superagent mock', function() {
         return { id: req.params.id, content: req.body.content };
       });
       request
-        .put('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .put('/topics/7', { id: 7, content: 'hello world!11' })
         .end(function(_, data) {
           data.should.have.property('id', '7');
-          data.should.have.property('content', 'hello world, bitch!11');
+          data.should.have.property('content', 'hello world!11');
           done();
-        })
-      ;
+        });
     });
 
     it('should mock for patch', function(done) {
@@ -67,13 +65,12 @@ describe('superagent mock', function() {
         return { id: req.params.id, content: req.body.content };
       });
       request
-        .patch('/topics/7', { id: 7, content: 'hello world, bitch!11' })
+        .patch('/topics/7', { id: 7, content: 'hello world!11' })
         .end(function(_, data) {
           data.should.have.property('id', '7');
-          data.should.have.property('content', 'hello world, bitch!11');
+          data.should.have.property('content', 'hello world!11');
           done();
-        })
-      ;
+        });
     });
 
     it('should mock for delete', function(done) {
@@ -86,8 +83,7 @@ describe('superagent mock', function() {
           data.should.have.property('id', '7');
           data.should.have.property('content', 'yay');
           done(); // just done
-        })
-      ;
+        });
     });
 
     it('should be async', function(done) {
@@ -97,8 +93,7 @@ describe('superagent mock', function() {
       });
       request
         .get('/async')
-        .end()
-      ;
+        .end();
       isAsync.should.be.true;
       done();
     });
@@ -188,6 +183,17 @@ describe('superagent mock', function() {
         });
     });
 
+    it('should support status code in response', function(done) {
+      mock.get('/topics/:id', function(req) {
+        return {body: {}, status: 500};
+      });
+      request.get('/topics/1')
+        .end(function(err, data) {
+          err.should.have.property('status', 500);
+          done();
+        });
+    });
+
     it('should support headers', function(done) {
       mock.get('/topics/:id', function(req) {
         return req.headers;
@@ -200,8 +206,7 @@ describe('superagent mock', function() {
           data.should.have.property('my-header', 'my-Value')
           data.should.have.property('user-agent', 'Opera Mini')
           done();
-        })
-      ;
+        });
     });
 
     it('should support multiple headers', function(done) {

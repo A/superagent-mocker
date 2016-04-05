@@ -95,7 +95,12 @@ function mock(superagent) {
     if (current) {
       setTimeout(function() {
         try {
-          cb && cb(null, current(state.request));
+          var response = current(state.request);
+          if (response.status !== 200) {
+            cb && cb(response, null);
+          } else {
+            cb && cb(null, response);
+          }
         } catch (ex) {
           cb && cb(ex, null);
         }
@@ -218,12 +223,15 @@ Route.prototype.match = function(method, url, body) {
   }
   var route = this;
   return function(req) {
-    return route.handler({
+    var handlerValue = route.handler({
       url: url,
       params: params || {},
       body: mergeObjects(body, req.body),
       headers: req.headers
     });
+    return mergeObjects({
+      status: 200
+    }, handlerValue);
   };
 };
 
