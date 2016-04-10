@@ -93,9 +93,9 @@ function mock(superagent) {
   reqProto.end = function(cb) {
     var current = state.current;
     if (current) {
-      setTimeout(function() {
+      setTimeout(function(request) {
         try {
-          var response = current(state.request);
+          var response = current(request);
           if (response.status !== 200) {
             cb && cb(response, null);
           } else {
@@ -104,7 +104,7 @@ function mock(superagent) {
         } catch (ex) {
           cb && cb(ex, null);
         }
-      }, value(mock.timeout));
+      }, value(mock.timeout), state.request);
     } else {
       oldEnd.call(this, cb);
     }
