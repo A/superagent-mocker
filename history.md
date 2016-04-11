@@ -1,3 +1,10 @@
+0.4.0 / 2016-04-11
+==================
+
+- mockable status codes added
+- fixed issue with sending multiple requests to single router [#28](https://github.com/A/superagent-mocker/issues/28)
+
+
 0.3.0 / 2015-10-07
 ==================
 
