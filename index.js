@@ -69,20 +69,11 @@ function mock(superagent) {
   if (superagent._patchedBySuperagentMocker) return mock;
   superagent._patchedBySuperagentMocker = true;
 
-  // The room for matched route
-  var state = {
-    current: null,
-    reqest: {
-      body: {},
-      headers: {}
-    }
-  };
-
   // patch api methods (http)
   for (var method in methodsMapping) {
     if (methodsMapping.hasOwnProperty(method)) {
       var httpMethod = methodsMapping[method];
-      patch(superagent, method, httpMethod, state);
+      patch(superagent, method, httpMethod);
     }
   }
 
@@ -91,8 +82,9 @@ function mock(superagent) {
   // Patch Request.end()
   var oldEnd = originalMethods.end = superagent.Request.prototype.end;
   reqProto.end = function(cb) {
-    var current = state.current;
-    if (current) {
+    var state = this._superagentMockerState;
+    if (state && state.current) {
+      var current = state.current;
       setTimeout(function(request) {
         try {
           var response = current(request);
@@ -113,7 +105,8 @@ function mock(superagent) {
   // Patch Request.set()
   var oldSet = originalMethods.set = reqProto.set;
   reqProto.set = function(key, val) {
-    if (!state.current) {
+    var state = this._superagentMockerState;
+    if (!state || !state.current) {
       return oldSet.call(this, key, val);
     }
     // Recursively set keys if passed an object
@@ -133,7 +126,8 @@ function mock(superagent) {
   // Patch Request.send()
   var oldSend = originalMethods.send = reqProto.send;
   reqProto.send = function(data) {
-    if (!state.current) {
+    var state = this._superagentMockerState;
+    if (!state || !state.current) {
       return oldSend.call(this, data);
     }
     state.request.body = mergeObjects(state.current.body, data);
@@ -184,15 +178,19 @@ function defineRoute(method, url, handler) {
 /**
  * Patch superagent method
  */
-function patch(superagent, prop, method, state) {
+function patch(superagent, prop, method) {
   var old = originalMethods[prop] = superagent[prop];
   superagent[prop] = function (url, data, fn) {
-    state.current = match(method, url, data);
-    state.request = {
-      headers: {},
-      body: {}
+    var current = match(method, url, data);
+    var orig = old.call(this, url, data, fn);
+    orig._superagentMockerState = {
+      current: current,
+      request: {
+        headers: {},
+        body: {}
+      },
     };
-    return old.call(this, url, data, fn);
+    return orig;
   };
 }
 

@@ -31,6 +31,24 @@ describe('superagent mock', function() {
       });
     });
 
+    it('should mock multiple requests', function(done) {
+      mock.get('/thread/:id', function(req) {
+        return { id: req.params.id };
+      });
+      var finished = 0;
+      var r1 = request.get('/thread/1');
+      var r2 = request.get('/thread/2');
+
+      r1.end(function(_, data) {
+        data.should.have.property('id', '1');
+        if (++finished == 2) done();
+      });
+      r2.end(function(_, data) {
+        data.should.have.property('id', '2');
+        if (++finished == 2) done();
+      });
+    });
+
     it('should mock for post', function(done) {
       mock.post('/topics/:id', function(req) {
         return {
