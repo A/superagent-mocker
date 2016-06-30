@@ -201,17 +201,6 @@ describe('superagent mock', function() {
         });
     });
 
-    it('should support status code in response', function(done) {
-      mock.get('/topics/:id', function(req) {
-        return {body: {}, status: 500};
-      });
-      request.get('/topics/1')
-        .end(function(err, data) {
-          err.should.have.property('status', 500);
-          done();
-        });
-    });
-
     it('should support headers', function(done) {
       mock.get('/topics/:id', function(req) {
         return req.headers;
