@@ -288,6 +288,31 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should parse parameters from query()', function(done) {
+      mock.get('/topics/:id', function(req) {
+        return req;
+      });
+      request
+        .get('/topics/5')
+        .query('hello=world')
+        .query('xx=yy&zz=0')
+        .query({ test: 'yay' })
+        .query({ foo: 'bar', baz: 'bat' })
+        .end(function(_, data) {
+          data.should.have.property('query');
+          should.deepEqual(data.query, {
+            hello: 'world',
+            xx: 'yy',
+            zz: '0',
+            test: 'yay',
+            foo: 'bar',
+            baz: 'bat'
+          });
+          done();
+        })
+      ;
+    });
+
     it('should remove patches by unmock()', function() {
       mock.unmock(request);
       (request._patchedBySuperagentMocker === void 0).should.be.true;

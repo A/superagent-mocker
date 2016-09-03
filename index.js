@@ -140,6 +140,24 @@ function mock(superagent) {
     return this;
   };
 
+  // Patch Request.query()
+  var oldQuery = originalMethods.query = reqProto.query;
+  reqProto.query = function(objectOrString) {
+    var state = this._superagentMockerState;
+    if (!state || !state.current) {
+      return oldQuery.call(this, objectOrString);
+    }
+    var obj = {};
+    if (isString(objectOrString)) {
+      obj = parseQueryString(objectOrString);
+    }
+    else if (isObject(objectOrString)) {
+      obj = stringifyValues(objectOrString);
+    }
+    state.request.query = mergeObjects(state.request.query, obj);
+    return this;
+  }
+
   return mock; // chaining
 
 }
@@ -193,7 +211,8 @@ function patch(superagent, prop, method) {
       current: current,
       request: {
         headers: {},
-        body: {}
+        body: {},
+        query: {}
       },
     };
     return orig;
@@ -231,7 +250,8 @@ Route.prototype.match = function(method, url, body) {
       url: url,
       params: params || {},
       body: mergeObjects(body, req.body),
-      headers: req.headers
+      headers: req.headers,
+      query: req.query
     });
     return mergeObjects({
       status: 200
@@ -254,6 +274,15 @@ function isObject(obj) {
 }
 
 /**
+ * Simple string test
+ * @param any val Variable to test
+ * @return bool True if variable is a string
+ */
+function isString(val) {
+  return 'string' === typeof val;
+}
+
+/**
  * Exec function and return value, or just return arg
  * @param {fn|any} val Value or fn to exec
  */
@@ -261,6 +290,30 @@ function value(val) {
   return 'function' === typeof val
     ? val()
     : val;
+}
+
+/**
+ * Parses a query string like "foo=bar&baz=bat" into objects like
+ * { foo: 'bar', baz: 'bat' }
+ * @param s string
+ */
+function parseQueryString(s) {
+  return s.split('&').reduce(function (obj, param) {
+    var parts = param.split('=');
+    var key = parts.shift();
+    var val = parts.shift();
+    if (key && val) {
+      obj[key] = val;
+    }
+    return obj;
+  }, {});
+}
+
+function stringifyValues(oldObj) {
+  return Object.keys(oldObj).reduce(function(obj, key) {
+    obj[key] = String(oldObj[key]);
+    return obj;
+  }, {});
 }
 
 /**
