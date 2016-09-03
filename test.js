@@ -119,6 +119,7 @@ describe('superagent mock', function() {
     it('should work correct with unmocked requests', function(done) {
       request
         .get('http://example.com')
+        .query({ foo: 'bar' })
         .end(function(err, res) {
           done(err);
         });
