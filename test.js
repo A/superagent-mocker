@@ -208,6 +208,8 @@ describe('superagent mock', function() {
       request.get('/topics/1')
         .end(function(err, data) {
           err.should.have.property('status', 500);
+          err.should.have.property('response');
+          should.deepEqual(err.response, {body: {}, status: 500});
           done();
         });
     });

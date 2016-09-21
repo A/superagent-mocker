@@ -89,7 +89,13 @@ function mock(superagent) {
         try {
           var response = current(request);
           if (response.status !== 200) {
-            cb && cb(response, null);
+            // superagent puts status and response on the error it returns,
+            // which should be an actual instance of Error
+            // See http://visionmedia.github.io/superagent/#error-handling
+            var error = new Error(response.status);
+            error.status = response.status;
+            error.response = response;
+            cb && cb(error, null);
           } else {
             cb && cb(null, response);
           }
