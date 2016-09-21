@@ -119,6 +119,7 @@ describe('superagent mock', function() {
     it('should work correct with unmocked requests', function(done) {
       request
         .get('http://example.com')
+        .query({ foo: 'bar' })
         .end(function(err, res) {
           done(err);
         });
@@ -283,6 +284,31 @@ describe('superagent mock', function() {
         .end(function(_, data) {
           data.should.have.property('title', 'Yay!');
           data.should.have.property('content', 'Hello world');
+          done();
+        })
+      ;
+    });
+
+    it('should parse parameters from query()', function(done) {
+      mock.get('/topics/:id', function(req) {
+        return req;
+      });
+      request
+        .get('/topics/5')
+        .query('hello=world')
+        .query('xx=yy&zz=0')
+        .query({ test: 'yay' })
+        .query({ foo: 'bar', baz: 'bat' })
+        .end(function(_, data) {
+          data.should.have.property('query');
+          should.deepEqual(data.query, {
+            hello: 'world',
+            xx: 'yy',
+            zz: '0',
+            test: 'yay',
+            foo: 'bar',
+            baz: 'bat'
+          });
           done();
         })
       ;
