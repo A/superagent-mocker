@@ -1,3 +1,10 @@
+0.5.0 / 2016-09-21
+==================
+
+- can now handle parallel requests [#32](https://github.com/A/superagent-mocker/issues/32)
+- Fix error parameter returned by mocked superagent to match the documented superagent error handling [#34](https://github.com/A/superagent-mocker/issues/34)
+- Support capturing query params [#35](https://github.com/A/superagent-mocker/issues/35) 
+
 0.4.0 / 2016-04-11
 ==================
 
