@@ -1,3 +1,8 @@
+0.5.1 / 2016-09-29
+==================
+
+- Allow non object data to be handled in the request body via `send()` [#36](https://github.com/A/superagent-mocker/pull/36)
+
 0.5.0 / 2016-09-21
 ==================
 
