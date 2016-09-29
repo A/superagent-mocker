@@ -136,7 +136,12 @@ function mock(superagent) {
     if (!state || !state.current) {
       return oldSend.call(this, data);
     }
-    state.request.body = mergeObjects(state.current.body, data);
+    if (isObject(data)) {
+      state.request.body = mergeObjects(state.current.body, data);
+    }
+    else {
+      state.request.body = data;
+    }
     return this;
   };
 
@@ -249,7 +254,7 @@ Route.prototype.match = function(method, url, body) {
     var handlerValue = route.handler({
       url: url,
       params: params || {},
-      body: mergeObjects(body, req.body),
+      body: isObject(req.body) ? mergeObjects(body, req.body) : req.body,
       headers: req.headers,
       query: req.query
     });
