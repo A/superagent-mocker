@@ -274,6 +274,20 @@ describe('superagent mock', function() {
       ;
     });
 
+    it('should pass non-object data from send()', function(done) {
+      mock.post('/topics/:id', function(req) {
+        return { body: req.body };
+      });
+      request
+        .post('/topics/6')
+        .send('foo bar baz')
+        .end(function(_, data) {
+          should.equal(data.body, 'foo bar baz');
+          done();
+        })
+      ;
+    });
+
     it('should rewrite post() data by send()', function(done) {
       mock.post('/topics/:id', function(req) {
         return req.body;
