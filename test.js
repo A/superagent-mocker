@@ -202,6 +202,18 @@ describe('superagent mock', function() {
         });
     });
 
+    it('should not treat a 204 as an error', function(done) {
+      mock.get('/topics/:id', function(req) {
+        return {status: 204};
+      });
+      request.get('/topics/1')
+        .end(function(err, data) {
+          should.not.exist(err);
+          data.should.have.property('status', 204);
+          done();
+        });
+    });
+
     it('should support status code in response', function(done) {
       mock.get('/topics/:id', function(req) {
         return {body: {}, status: 500};
