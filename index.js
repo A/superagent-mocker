@@ -88,7 +88,7 @@ function mock(superagent) {
       setTimeout(function(request) {
         try {
           var response = current(request);
-          if (response.status !== 200) {
+          if (!/20[0-6]/.test(response.status)) {
             // superagent puts status and response on the error it returns,
             // which should be an actual instance of Error
             // See http://visionmedia.github.io/superagent/#error-handling
