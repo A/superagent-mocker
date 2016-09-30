@@ -1,3 +1,8 @@
+0.5.2 / 2016-09-29
+==================
+
+- Treat other 20x statuses (besides 200) as success [#38](https://github.com/A/superagent-mocker/pull/38)
+
 0.5.1 / 2016-09-29
 ==================
 
