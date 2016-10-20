@@ -103,6 +103,7 @@ function mock(superagent) {
           cb && cb(ex, null);
         }
       }, value(mock.timeout), state.request);
+      return this;
     } else {
       oldEnd.call(this, cb);
     }
