@@ -33,10 +33,30 @@ var routes = [];
 var originalMethods = {};
 
 /**
+ * Enable/disable mocks only usage
+ * @type {boolean}
+ */
+var useMocksOnly = false;
+
+/**
+ * Enable use mocks only
+ */
+mock.enableUseMocksOnly = function() {
+  useMocksOnly = true;
+};
+
+/**
+ * Disable use mocks only
+ */
+mock.disableUseMocksOnly = function() {
+  useMocksOnly = false;
+};
+
+/**
  * Unregister all routes
  */
 mock.clearRoutes = function() {
-  routes.splice(0, routes.length)
+  routes.length = 0; // works faster then others
 };
 
 /**
@@ -59,6 +79,7 @@ mock.clearRoute = function(method, url) {
     return !(route.url === url && route.method === method);
   });
 };
+
 
 /**
  * Mock
@@ -211,6 +232,9 @@ function patch(superagent, prop, method) {
   var old = originalMethods[prop] = superagent[prop];
   superagent[prop] = function (url, data, fn) {
     var current = match(method, url, data);
+    if (useMocksOnly && !current) {
+      throw new Error('[superagent-mocker] Unmocked url: ' + method + ' ' + url);
+    }
     var orig = old.call(this, url, data, fn);
     orig._superagentMockerState = {
       current: current,
