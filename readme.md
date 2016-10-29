@@ -140,7 +140,7 @@ mock.clearRoute('get', '/me');
 ### Rollback library effect
 
 In some cases it will be useful to remove patches from superagent lib after using mocks.
-In this cases you can use ```mock.unmock()``` method, that will rollback all patches that ```mock(superagent)``` call make.
+In this cases you can use ```mock.unmock(superagent)``` method, that will rollback all patches that ```mock(superagent)``` call make.
 
 ## License
 
