@@ -86,22 +86,27 @@ function mock(superagent) {
     if (state && state.current) {
       var current = state.current;
       setTimeout(function(request) {
+        var error = null;
+        var response = null;
         try {
-          var response = current(request);
+          response = current(request);
           if (!/20[0-6]/.test(response.status)) {
             // superagent puts status and response on the error it returns,
             // which should be an actual instance of Error
             // See http://visionmedia.github.io/superagent/#error-handling
-            var error = new Error(response.status);
+            error = new Error(response.status);
             error.status = response.status;
             error.response = response;
-            cb && cb(error, null);
+            response = null
           } else {
-            cb && cb(null, response);
+            error = null
           }
         } catch (ex) {
-          cb && cb(ex, null);
+          error = ex
+          response = null
         }
+
+        cb && cb(error, response);
       }, value(mock.timeout), state.request);
     } else {
       oldEnd.call(this, cb);
