@@ -22,6 +22,12 @@
     "test"
   ],
   "author": "Anton <anton@shuvalov.info> (http://shuvalov.info/)",
+  "contributors": [
+    {
+      "name": "Koryukov Maksim",
+      "email": "maxkoryukov@gmail.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/shuvalov-anton/superagent-mocker/issues"
