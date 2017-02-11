@@ -150,6 +150,24 @@ function mock(superagent) {
     return this;
   };
 
+  // Patch Request.field()
+  var oldField = originalMethods.field = reqProto.field;
+  reqProto.field = function(key, val) {
+    var state = this._superagentMockerState;
+    if (!state || !state.current) {
+      return oldField.call(this, key, val);
+    }
+    // Recursively prop keys if passed an object
+    if (isObject(key)) {
+      for (var prop in key) {
+        this.field(prop, key[prop]);
+      }
+      return this;
+    }
+    state.request.body[key] = val;
+    return this;
+  };
+
   // Patch Request.query()
   var oldQuery = originalMethods.query = reqProto.query;
   reqProto.query = function(objectOrString) {
