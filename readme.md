@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/A/superagent-mocker.svg?branch=master)](https://travis-ci.org/A/superagent-mocker)
 [![Coverage Status](https://coveralls.io/repos/github/A/superagent-mocker/badge.svg?branch=master)](https://coveralls.io/github/A/superagent-mocker?branch=master)
+[![npm version](https://img.shields.io/npm/v/superagent-mocker.svg)](https://www.npmjs.com/package/superagent-mocker)
+[![npm downloads](https://img.shields.io/npm/dm/superagent-mocker.svg)](https://www.npmjs.com/package/superagent-mocker)
 
 REST API mocker for the browsers. LOOK MA NO BACKEND! 👐
 
