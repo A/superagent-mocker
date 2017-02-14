@@ -116,13 +116,27 @@ describe('superagent mock', function() {
       done();
     });
 
-    it('should work correct with unmocked requests', function(done) {
+    it('should work correct with unmocked requests by default', function(done) {
       request
         .get('http://example.com')
         .query({ foo: 'bar' })
         .end(function(err, res) {
           done(err);
         });
+    });
+
+    it('should throw error with unmocked requests when useMocksOnly enabled', function(done) {
+        mock.enableUseMocksOnly();
+
+        should.throws(function() {
+            request
+                .get('http://example.com')
+                .query({ foo: 'bar' })
+                .end(function(err, res) {});
+        }, /Unmocked url/);
+        done();
+
+        mock.disableUseMocksOnly();
     });
 
     it('should work with custom timeout', function(done) {
