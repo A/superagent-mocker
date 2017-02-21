@@ -261,7 +261,8 @@ Route.prototype.match = function(method, url, body) {
       params: params || {},
       body: isObject(req.body) ? mergeObjects(body, req.body) : req.body,
       headers: req.headers,
-      query: req.query
+      query: req.query,
+      method: method
     });
     return mergeObjects({
       status: 200
